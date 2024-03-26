@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactionItem from './ReactionItem'
 
-const ReactList = () => {
+const ReactList = ({reacts, postId}) => {
     const reactions = {
         'laugh': '🤣',
         'happy': '🙂',
@@ -13,7 +13,7 @@ const ReactList = () => {
     <>
         <div className="flex">
         {
-            Object.keys(reactions).map((key, index)=> <ReactionItem reaction={reactions[key]} key={index}/>)
+            Object.keys(reactions).map((key, index)=> <ReactionItem postId={postId} reacts={reacts} k={key} reaction={reactions[key]} key={index}/>)
         }
         </div>
     </>
