@@ -50,6 +50,9 @@ const NewBlog = () => {
                 <div className="flex flex-col gap-2">
                     <label htmlFor="name">Blog Title</label>
                     <select name="" id="" className='text-black p-2 rounded' onChange={onAuthorChange}>
+                        {userStatus == 'loading' && <option>Loading....</option>}
+                        {userStatus == 'succeeded' && <option>Select a author</option>}
+                        {userStatus == 'failed' && <option>Failed to load data.</option>}                    
                         {
                             users.map(user => <option value={user.id}>{user.name}</option>)
                         }                        
