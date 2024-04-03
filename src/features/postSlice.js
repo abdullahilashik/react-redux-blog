@@ -13,6 +13,15 @@ export const fetchPosts = createAsyncThunk('posts/fetch', async() => {
   }
 });
 
+export const addNewPost = createAsyncThunk('posts/addPost', async(data) => {
+  try{
+    const response = await axios.post(URL, data);
+    return response.data;
+  }catch(error){
+    return error.message;
+  }
+});
+
 const initialState = {
   posts: [],
   status: 'idle', // idle, loading, succeeded, failed
@@ -137,6 +146,20 @@ const slicer = createSlice({
       .addCase(fetchPosts.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
+      })
+      .addCase(addNewPost.fulfilled, (state, action) => {
+        const post = action.payload;
+        post.date = new Date().toDateString();
+        post.reactions = {
+          'laugh': 0,
+          'happy': 0,
+          'wink': 0,
+          'love': 0,
+          'angry': 0
+        };
+        post.content = post.body;
+        post.author = post.userId;
+        state.posts.push(post);
       });
   }
 });

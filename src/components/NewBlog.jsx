@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import {useDispatch, useSelector} from 'react-redux';
-import {postAdded} from '../features/postSlice';
+import {addNewPost, postAdded} from '../features/postSlice';
 import {nanoid} from '@reduxjs/toolkit';
-import { fetchUsers, getuserError, getUserStatus, selectAllUsers } from '../features/userSlice';
+import { getuserError, getUserStatus, selectAllUsers } from '../features/userSlice';
 
 const NewBlog = () => {
 
@@ -10,17 +10,13 @@ const NewBlog = () => {
     const userError = useSelector(getuserError);
     const userStatus = useSelector(getUserStatus);
     
+    
 
     const disPatch = useDispatch();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [author, setAuthor] = useState(null);
-
-    useEffect(()=>{
-        if(userStatus === 'idle'){
-            disPatch(fetchUsers());
-        }
-    }, []);
+    const [addRequestStatus, setAddRequestStatus] = useState('idle');    
 
     const onTitleChange = (e) => setTitle(e.target.value);
     const onContentChange = (e) => setContent(e.target.value);
@@ -28,12 +24,22 @@ const NewBlog = () => {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        disPatch(postAdded({id: nanoid(), title: title, content: content, author: author}));
-        setTitle('');
-        setContent('');
+        try{
+            setAddRequestStatus('pending');
+            // disPatch(postAdded({id: nanoid(), title: title, content: content, author: author}));
+            disPatch(addNewPost({title, body: content, userId: author})).unwrap();
+            setTitle('');
+            setContent('');
+            setAuthor('');
+        }catch(err){
+            console.log(err.message);
+        }finally {
+            setAddRequestStatus('idle');
+            console.log('Request finished');
+        }
     }
 
-    const canSave = Boolean(title) && Boolean(content) && Boolean(author);
+    const canSave = [title, content, author].every(Boolean) && addRequestStatus === 'idle';
 
 
   return (
@@ -49,7 +55,7 @@ const NewBlog = () => {
                 {/* authors */}
                 <div className="flex flex-col gap-2">
                     <label htmlFor="name">Blog Title</label>
-                    <select name="" id="" className='text-black p-2 rounded' onChange={onAuthorChange}>
+                    <select name="" id="" className='text-black p-2 rounded' value={author} onChange={onAuthorChange}>
                         {userStatus == 'loading' && <option>Loading....</option>}
                         {userStatus == 'succeeded' && <option>Select a author</option>}
                         {userStatus == 'failed' && <option>Failed to load data.</option>}                    
@@ -61,7 +67,7 @@ const NewBlog = () => {
                 {/* content */}
                 <div className="flex flex-col gap-2">
                     <label htmlFor="name">Blog Title</label>
-                    <textarea onChange={onContentChange} name="" id="" cols="30" rows="10" className='rounded p-2 text-black' placeholder='Your blog content here'>{content}</textarea>
+                    <textarea onChange={onContentChange} name="" id="" cols="30" rows="10" className='rounded p-2 text-black' placeholder='Your blog content here' value={content}></textarea>
                 </div>
                 <button disabled={!canSave} className='px-5 py-2 rounded shadow-2xl shadow-gray-600 bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed'>Save</button>
             </form>

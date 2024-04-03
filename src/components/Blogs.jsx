@@ -9,7 +9,11 @@ const Blogs = () => {
   const postError = useSelector(getPostError);
   const postStatus = useSelector(getPostStatus);
 
-  const blogs = rawBlogs.slice().sort((a,b) => new Date(b.date) - new Date(a.date));
+  const blogs = rawBlogs.slice().sort((a,b) => {
+    console.log(a.date);
+    console.log(b.date);
+    return a.date.localeCompare(b.date)
+  });
 
   useEffect(()=>{
     if(postStatus === 'idle'){
