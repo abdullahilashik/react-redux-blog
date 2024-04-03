@@ -4,6 +4,7 @@ import ReactList from './ReactList';
 import moment from 'moment';
 import PostAuthor from './PostAuthor';
 import PostDate from './PostDate';
+import { Link } from 'react-router-dom';
 
 const BlogItem = ({blog}) => {
   return (
@@ -16,6 +17,7 @@ const BlogItem = ({blog}) => {
                     <PostDate date={blog.date} />
                 </div>
                 <p className='text-sm line-clamp-4 max-w-sm'>{blog.content}</p>
+                <Link className='text-sm underline' to={`/posts/${blog.id}`}>Read More</Link>
                 <ReactList postId={blog.id} reacts={blog.reactions} />
             </div>
         </div>
